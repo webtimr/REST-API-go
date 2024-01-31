@@ -1,11 +1,12 @@
 package main
 
 import (
-	"fmt"
 	"log/slog"
 	"os"
 
 	"github.com/webtimr/REST-API-go/internal/config"
+	"github.com/webtimr/REST-API-go/internal/lib/logger/sl"
+	"github.com/webtimr/REST-API-go/storage/sqlite"
 )
 
 const (
@@ -22,7 +23,14 @@ func main() {
 	log.Info("starting", slog.String("env", cfg.Env))
 	log.Debug("debug messages are enabled")
 
-	fmt.Println(cfg)
+	storage, err := sqlite.New(cfg.StoragePath)
+	if err != nil {
+		log.Error("failed to init storage", sl.Err(err))
+		os.Exit(1)
+	}
+
+	_ = storage
+
 }
 
 func setupLogger(env string) *slog.Logger {
